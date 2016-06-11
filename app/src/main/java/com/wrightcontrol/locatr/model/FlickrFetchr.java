@@ -1,8 +1,8 @@
 package com.wrightcontrol.locatr.model;
 
+import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
-import com.wrightcontrol.locatr.model.GalleryItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +32,14 @@ public class FlickrFetchr {
             .appendQueryParameter("nojsoncallback", "1")
             .appendQueryParameter("extras", "url_s")
             .build();
+
+    private String buildUrl(Location location) {
+        return ENDPOINT.buildUpon()
+                .appendQueryParameter("method", SEARCH_METHOD)
+                .appendQueryParameter("lat", "" + location.getLatitude())
+                .appendQueryParameter("lon", "" + location.getLongitude())
+                .build().toString();
+    }
 
     public byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
@@ -70,6 +78,11 @@ public class FlickrFetchr {
     public List<GalleryItem> searchPhotos(String query) {
         String url = buildUrl(SEARCH_METHOD, query);
         return downloadGalleryItem(url);
+    }
+
+    public List<GalleryItem> searchPhotos(Location location){
+        String url = buildUrl(location);
+        return  downloadGalleryItem(url);
     }
 
     private List<GalleryItem> downloadGalleryItem(String url) {
