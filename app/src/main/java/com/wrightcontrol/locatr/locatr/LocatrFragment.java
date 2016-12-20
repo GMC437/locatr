@@ -15,8 +15,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.*;
 import com.wrightcontrol.locatr.R;
 import com.wrightcontrol.locatr.model.FlickrFetchr;
 import com.wrightcontrol.locatr.model.GalleryItem;
@@ -131,6 +130,19 @@ public class LocatrFragment extends SupportMapFragment {
 
         LatLng itemPoint = new LatLng(mMapItem.getLat(), mMapItem.getLon());
         LatLng myPoint = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+
+
+        BitmapDescriptor itemBitmap = BitmapDescriptorFactory.fromBitmap(mMapImage);
+        MarkerOptions itemMarker = new MarkerOptions()
+                .position(itemPoint)
+                .icon(itemBitmap);
+
+        MarkerOptions myMarker = new MarkerOptions()
+                .position(myPoint);
+
+        mMap.clear();
+        mMap.addMarker(itemMarker);
+        mMap.addMarker(myMarker);
 
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(itemPoint)
