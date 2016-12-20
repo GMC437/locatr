@@ -3,5 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <dimen name="one_hundred_dp">100dp</dimen>
     <dimen name="one_hundred_fifty_dp">150dp</dimen>
 </resources>

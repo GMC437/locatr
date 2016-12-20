@@ -14,7 +14,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.wrightcontrol.locatr.R;
 import com.wrightcontrol.locatr.model.FlickrFetchr;
 import com.wrightcontrol.locatr.model.GalleryItem;
@@ -29,12 +31,14 @@ public class LocatrFragment extends SupportMapFragment {
     private static final String TAG = "LocatrFragment";
 
     private GoogleApiClient mClient;
-
+    private GoogleMap mMap;
+    private Bitmap mMapImage;
+    private GalleryItem mMapItem;
+    private Location mCurrentLocation;
 
     public static LocatrFragment newInstance() {
         return new LocatrFragment();
     }
-
 
 
     private void instantiateWidgets(View view) {
@@ -60,6 +64,14 @@ public class LocatrFragment extends SupportMapFragment {
                     }
                 })
                 .build();
+
+        getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                mMap = googleMap;
+                updateUI();
+            }
+        });
     }
 
     @Override
@@ -112,25 +124,46 @@ public class LocatrFragment extends SupportMapFragment {
                 });
     }
 
+    private void updateUI() {
+        if (mMap == null || mMapImage == null) {
+            return;
+        }
+
+        LatLng itemPoint = new LatLng(mMapItem.getLat(), mMapItem.getLon());
+        LatLng myPoint = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(itemPoint)
+                .include(myPoint)
+                .build();
+
+        int margin = getResources().getDimensionPixelOffset(R.dimen.one_hundred_dp);
+        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, margin);
+        mMap.animateCamera(update);
+    }
+
     private class SearchTask extends AsyncTask<Location, Void, Void> {
         private GalleryItem mGalleryItem;
         private Bitmap mBitmap;
+        private Location mLocation;
 
         @Override
         protected Void doInBackground(Location... params) {
+            mLocation = params[0];
+
             FlickrFetchr fetchr = new FlickrFetchr();
             List<GalleryItem> items = fetchr.searchPhotos(params[0]);
 
-            if (items.size() == 0){
+            if (items.size() == 0) {
                 return null;
             }
 
             mGalleryItem = items.get(0);
 
-            try{
+            try {
                 byte[] bytes = fetchr.getUrlBytes(mGalleryItem.getUrl());
                 mBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            }catch (IOException ioe){
+            } catch (IOException ioe) {
                 Log.i(TAG, "unable to download bitmap", ioe);
             }
 
@@ -139,6 +172,12 @@ public class LocatrFragment extends SupportMapFragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+
+            mMapImage = mBitmap;
+            mMapItem = mGalleryItem;
+            mCurrentLocation = mLocation;
+
+            updateUI();
 
         }
     }
