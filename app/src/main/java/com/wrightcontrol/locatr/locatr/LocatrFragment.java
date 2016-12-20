@@ -5,14 +5,16 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.*;
-import android.widget.ImageView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.wrightcontrol.locatr.R;
 import com.wrightcontrol.locatr.model.FlickrFetchr;
 import com.wrightcontrol.locatr.model.GalleryItem;
@@ -23,10 +25,9 @@ import java.util.List;
 /**
  * Created by Grant on 09/06/2016.
  */
-public class LocatrFragment extends Fragment {
+public class LocatrFragment extends SupportMapFragment {
     private static final String TAG = "LocatrFragment";
 
-    private ImageView mPlaceHolderImage;
     private GoogleApiClient mClient;
 
 
@@ -34,17 +35,10 @@ public class LocatrFragment extends Fragment {
         return new LocatrFragment();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_locatr, container, false);
 
-        instantiateWidgets(view);
-
-        return view;
-    }
 
     private void instantiateWidgets(View view) {
-        mPlaceHolderImage = (ImageView) view.findViewById(R.id.image_view_place_holder);
+
     }
 
     @Override
@@ -145,7 +139,7 @@ public class LocatrFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            mPlaceHolderImage.setImageBitmap(mBitmap);
+
         }
     }
 }
